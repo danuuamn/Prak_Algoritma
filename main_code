@@ -1,0 +1,213 @@
+#include <iostream>
+using namespace std;
+
+struct roti {
+    string nama;
+    string kode;
+    int harga;
+};
+
+roti rt[] = {
+    {"Kue Ultah", "001", 5000},
+    {"Roti Tawar", "002", 3000},
+    {"Roti Bagel", "003", 7000},
+    {"Roti Sosis", "004", 6000},
+    {"Roti Selai", "005", 4000}
+};
+
+void quick_sort(roti array[], int awal, int akhir) {
+    int low = awal, high = akhir;
+    int pivot = array[(awal + akhir) / 2].harga;
+    int temp;
+    do {
+        while (array[low].harga < pivot)
+            low++;
+        while (array[high].harga > pivot)
+            high--;
+        if (low <= high) {
+            swap(array[low], array[high]);
+            low++;
+            high--;
+        }
+    } while (low <= high);
+    if (awal < high)
+        quick_sort(array, awal, high);
+    if (low < akhir)
+        quick_sort(array, low, akhir);
+}
+
+void reset_sorting() {
+    for(int i = 0; i < 5-1; i++){
+        for(int j = i + 1; j < 5; j++){
+            if(rt[i].kode > rt[j].kode){
+                swap(rt[i], rt[j]);
+            }   
+        }
+    }
+}
+
+void daftarRoti() {
+    system("cls");
+    cout << "DAFTAR ROTI" << endl;
+    cout << "====================" << endl;
+
+    roti* ptr = rt;
+
+    for (int i = 0; i < 5; i++) {
+        cout << "Nama Roti  : " << (ptr+i)->nama << endl;
+        cout << "Kode Roti  : " << (ptr+i)->kode << endl;
+        cout << "Harga Roti : " << (ptr+i)->harga << endl;
+        cout << "====================" << endl;
+    }
+}
+
+void cariRoti() {
+    int i;
+    int pilih;
+    bool found;
+    string cari1, cari2;
+    system("cls");
+    cout << "CARI ROTI" << endl;
+    cout << "====================" << endl;
+    cout << "1. Berdasarkan Kode" << endl;
+    cout << "2. Berdasarkan Nama" << endl;
+    cout << "====================" << endl;
+    cout << "Pilihan : "; cin >> pilih;
+    switch(pilih) {
+        case 1:
+            cout << "Berdasarkan Kode" << endl;
+            cout << "====================" << endl;
+            cout << "Masukkan kode yang dicari : "; cin >> cari1; cin.ignore();
+            i = 0; found = false;
+            while((i<5 && (!found))) {
+                if(rt[i].kode == cari1) {
+                    found = true;
+                } else {
+                    i++;
+                }
+            }
+            if(found) {
+                cout << "Kode " << cari1 << " :" << endl;
+                cout << " " << endl;
+                cout << "Nama Roti  : " << rt[i].nama << endl;
+                cout << "Harga Roti : " << rt[i].harga << endl;
+            } else {
+                cout << "Kode " << cari1 << " tidak ditemukan" << endl;
+            }
+            break;
+        case 2:
+            for(int i = 0; i < 5-1; i++){
+                for(int j = i + 1; j < 5; j++){
+                    if(rt[i].nama > rt[j].nama){
+                        swap(rt[i], rt[j]);
+                    }   
+                }
+            }
+            cout << "Berdasarkan Nama" << endl;
+            cout << "====================" << endl;
+            cout << "Masukkan nama yang dicari : "; cin.ignore(); getline(cin, cari2);
+            int awal, akhir, tengah;
+            awal = 0; akhir = 5 - 1; found = false;
+            while((awal <= akhir) && (!found)) {
+                tengah = (awal + akhir) / 2;
+                if(rt[tengah].nama == cari2) {
+                    found = true;
+                } else {
+                    if(rt[tengah].nama > cari2) {
+                        akhir = tengah - 1;
+                    } else {
+                        awal = tengah + 1;
+                    }
+                }
+            }
+            if(found) {
+                cout << "Nama " << cari2 << " :" << endl;
+                cout << " " << endl;
+                cout << "Nama   : " << rt[tengah].nama << endl;
+                cout << "Kode   : " << rt[tengah].kode << endl;
+                cout << "Harga  : " << rt[tengah].harga << endl;
+            } else {
+                cout << "Nama " << cari2 << " tidak ditemukan" << endl;
+            }
+            reset_sorting();
+            break;
+        default:
+            cout << "Pilihan tidak tersedia" << endl;
+            break;
+    }
+}
+
+void urutRoti() {
+    int pilih;
+    system("cls");
+    cout << "URUTKAN ROTI" << endl;
+    cout << "====================" << endl;
+    cout << "1. Ascending" << endl;
+    cout << "2. Descending" << endl;
+    cout << "3. Reset Pengurutan" << endl;
+    cout << "====================" << endl;
+    cout << "Pilihan : "; cin >> pilih; cin.ignore();
+    switch(pilih) {
+        case 1:
+            quick_sort(rt, 0, 5 - 1);
+            cout << "Data berhasil diurutkan berdasarkan harga" << endl;
+            cout << "Silahkan cek daftar roti" << endl;
+            break;
+        case 2:
+            for(int i = 0; i < 5-1; i++){
+                for(int j = i + 1; j < 5; j++){
+                    if(rt[i].harga < rt[j].harga){
+                        swap(rt[i], rt[j]);
+                    }   
+                }
+            }
+            cout << "Data berhasil diurutkan berdasarkan harga" << endl;
+            cout << "Silahkan cek daftar roti" << endl;
+            break;
+        case 3:
+            reset_sorting();
+            cout << "Pengurutan direset" << endl;
+            break;
+        default:
+            cout << "Pilihan tidak tersedia" << endl;
+            break;
+    }
+}
+int main() {
+    int menu;
+    char ulang;
+    do
+    {
+        system("cls");
+        cout << "====================" << endl;
+        cout << "TOKO ROTI AK" << endl;
+        cout << "====================" << endl;
+        cout << "1. Daftar Roti" << endl;
+        cout << "2. Cari Roti" << endl;
+        cout << "3. Urutkan Roti" << endl;
+        cout << "4. Keluar" << endl;
+        cout << "====================" << endl;
+        cout << "Pilih menu: "; cin >> menu;
+        switch (menu) {
+            case 1:
+                daftarRoti();
+                break;
+            case 2:
+                cariRoti();
+                break;
+            case 3:
+                urutRoti();
+                break;
+            case 4:
+                cout << "Terima kasih telah menggunakan program! :)" << endl; exit(0);  
+                break;
+            default:
+                cout << "Menu tidak tersedia" << endl;
+                break;
+        }
+        cout << " " << endl;
+        cout << "Kembali ke menu? (y/n) "; cin >> ulang; cin.ignore();
+    } while (ulang == 'y' || ulang == 'Y');
+    cout << "Terima kasih telah menggunakan program! :)" << endl;
+    return 0;
+}
