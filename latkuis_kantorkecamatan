@@ -1,0 +1,228 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct kependudukan {
+    char nama[50];
+    char noKependudukan[20];
+    char alamat[100];
+    char jenisKelamin;
+};
+
+kependudukan kp[20];
+int jumlahData = 0;
+
+void simpanKeFile() {
+    FILE *data = fopen("data_kependudukan.dat", "wb");
+    if (data == NULL) {
+        cout << "Gagal menyimpan ke file!" << endl;
+        return;
+    }
+
+    fwrite(kp, sizeof(kependudukan), jumlahData, data);
+    fclose(data);
+}
+
+void bacaDariFile() {
+    FILE *data = fopen("data_kependudukan.dat", "rb");
+    if (data == NULL) {
+        cout << "Belum ada data yang tersimpan!" << endl;
+        return;
+    }
+
+    jumlahData = fread(kp, sizeof(kependudukan), 20, data);
+    fclose(data);
+}
+
+void inputData() {
+    int jumlah;
+    system("cls");
+    cout << "INPUT DATA" << endl;
+    cout << "====================" << endl;
+    cout << "Ingin input berapa data? "; cin >> jumlah;
+    cin.ignore();
+    cout << " " << endl;
+
+    for (int i = 0; i < jumlah; i++) {
+        cout << "Data ke-" << i+1 << endl;
+        cout << "----------------" << endl;
+        cout << "Nama                   : "; cin.getline(kp[jumlahData].nama, 50);
+        cout << "No. Kependudukan       : "; cin.getline(kp[jumlahData].noKependudukan, 20);
+        cout << "Alamat                 : "; cin.getline(kp[jumlahData].alamat, 100);
+        cout << "Jenis Kelamin (L/P)    : "; cin >> kp[jumlahData].jenisKelamin;
+        cin.ignore();
+        cout << " " << endl;
+        jumlahData++;
+    }
+
+    simpanKeFile();
+    cout << "Data berhasil disimpan ke file" << endl;
+}
+
+void lihatData() {
+    bacaDariFile();
+    system("cls");
+
+    for (int i = 0; i < jumlahData - 1; i++) {
+        for (int j = 0; j < jumlahData - i - 1; j++) {
+            if (strcmp(kp[j].noKependudukan, kp[j + 1].noKependudukan) > 0) {
+                kependudukan temp = kp[j];
+                kp[j] = kp[j + 1];
+                kp[j + 1] = temp;
+            }
+        }
+    }
+
+    cout << "LIHAT DATA" << endl;
+    cout << "==========================================================" << endl;
+    cout << "No | Nama | No. Kependudukan | Alamat | Jenis Kelamin" << endl;
+    cout << "==========================================================" << endl;
+    for (int i = 0; i < jumlahData; i++) {
+        cout << i+1 << " | " << kp[i].nama << " | " << kp[i].noKependudukan 
+             << " | " << kp[i].alamat << " | " << kp[i].jenisKelamin << endl;
+    }
+}
+
+void cariData() {
+    bacaDariFile();
+    char cari[20]; 
+    bool found = false;
+    
+    system("cls");
+    cout << "CARI DATA" << endl;
+    cout << "====================" << endl;
+    cout << "Masukkan No. Kependudukan yang dicari: "; 
+    cin >> cari;
+    cout << endl;
+
+    for (int i = 0; i < jumlahData; i++) {
+        if (strcmp(kp[i].noKependudukan, cari) == 0) {
+            found = true;
+            cout << "Data ditemukan!" << endl;
+            cout << "-------------------------------------------" << endl;
+            cout << "Nama               : " << kp[i].nama << endl;
+            cout << "No. Kependudukan   : " << kp[i].noKependudukan << endl;
+            cout << "Alamat             : " << kp[i].alamat << endl;
+            cout << "Jenis Kelamin      : " << kp[i].jenisKelamin << endl;
+            cout << "-------------------------------------------" << endl;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "No. Kependudukan " << cari << " tidak ditemukan." << endl;
+    }
+}
+
+void editData() {
+    bacaDariFile();
+    char edit[20];
+    bool found = false;
+    system("cls");
+    cout << "EDIT DATA" << endl;
+    cout << "====================" << endl;
+    cout << "Masukkan No. Kependudukan yang ingin diedit: "; cin >> edit;
+
+    for (int i = 0; i < jumlahData; i++) {
+        if (strcmp(kp[i].noKependudukan, edit) == 0) {
+            cout << "Data ditemukan!" << endl;
+            cout << "-------------------------------------------" << endl;
+            cout << "Nama               : " << kp[i].nama << endl;
+            cout << "No. Kependudukan   : " << kp[i].noKependudukan << endl;
+            cout << "Alamat             : " << kp[i].alamat << endl;
+            cout << "Jenis Kelamin      : " << kp[i].jenisKelamin << endl;
+            cout << "-------------------------------------------" << endl;
+            cout << "Masukkan data baru" << endl;
+            cout << "Nama                   : "; cin.ignore(); cin.getline(kp[i].nama, 50);
+            cout << "No. Kependudukan       : "; cin.getline(kp[i].noKependudukan, 20);
+            cout << "Alamat                 : "; cin.getline(kp[i].alamat, 100);
+            cout << "Jenis Kelamin (L/P)    : "; cin >> kp[i].jenisKelamin;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Data tidak ditemukan" << endl;
+    } else {
+        simpanKeFile();
+        cout << "Data berhasil diubah" << endl;
+    }
+}
+
+void hapusData() {
+    char hapus[20];
+    bool found = false;
+    system("cls");
+    cout << "HAPUS DATA" << endl;
+    cout << "====================" << endl;
+    cout << "Masukkan No. Kependudukan yang ingin dihapus: "; cin >> hapus;
+
+    for (int i = 0; i < jumlahData; i++) {
+        if (strcmp(kp[i].noKependudukan, hapus) == 0) {
+            for (int j = i; j < jumlahData - 1; j++) {
+                kp[j] = kp[j+1];
+            }
+            jumlahData--;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Data tidak ditemukan" << endl;
+    } else {
+        simpanKeFile();
+        cout << "Data berhasil dihapus" << endl;
+    }
+}
+
+int main() {
+    int menu;
+    char ulang;
+    do {
+        system("cls");
+        cout << "====================" << endl;
+        cout << "DATA KEPENDUDUKAN" << endl;
+        cout << "====================" << endl;
+        cout << "1. Input Data" << endl;
+        cout << "2. Lihat Data" << endl;
+        cout << "3. Cari Data" << endl;
+        cout << "4. Edit Data" << endl;
+        cout << "5. Hapus Data" << endl;
+        cout << "6. Keluar" << endl;
+        cout << "====================" << endl;
+        cout << "Pilih menu: "; cin >> menu;
+
+        switch (menu) {
+            case 1:
+                inputData();
+                break;
+            case 2:
+                lihatData();
+                break;
+            case 3:
+                cariData();
+                break;
+            case 4:
+                editData();
+                break;
+            case 5:
+                hapusData();
+                break;
+            case 6:
+                cout << "Terima kasih telah menggunakan program! :)" << endl;
+                exit(0);
+                break;
+            default:
+                cout << "Menu tidak tersedia" << endl;
+                break;
+        }
+
+        cout << endl;
+        cout << "Kembali ke menu? (y/n) "; cin >> ulang;
+    } while (ulang == 'y' || ulang == 'Y');
+
+    cout << "Terima kasih telah menggunakan program! :)" << endl;
+    return 0;
+} 
