@@ -1,0 +1,171 @@
+#include <iostream>
+using namespace std;
+
+struct antrean {
+    string nama, roti;
+    int harga;
+    antrean *next;
+};
+
+antrean *depan = nullptr;
+antrean *belakang = nullptr;
+
+antrean *historidepan = nullptr;
+antrean *historibelakang = nullptr;
+
+bool antreanKosong() {
+    return (depan == nullptr);
+}
+
+void tambahAntrean() {
+    antrean *NB = new antrean;
+
+    cin.ignore();
+    cout << "Masukkan nama pembeli: ";
+    getline(cin, NB->nama);
+
+    cout << "Masukkan nama roti: ";
+    getline(cin, NB->roti);
+
+    cout << "Masukkan total harga: ";
+    cin >> NB->harga;
+
+    NB->next = nullptr;
+
+    if (depan == nullptr) {
+        depan = NB;
+    } else {
+        belakang->next = NB;
+    }
+    belakang = NB;
+    cout << "Antrean " << NB->nama << " telah ditambahkan ke antrean." << endl;
+}
+
+void layaniPembeli() {
+    if(antreanKosong()) {
+        cout << "Antrian kosong! :P" << endl;
+    } else {
+        antrean *hapus = depan;
+        depan = depan->next;
+        if(depan == nullptr) {
+            belakang = nullptr;
+        }
+
+        antrean *histori = new antrean;
+        histori->nama = hapus->nama;
+        histori->roti = hapus->roti;
+        histori->harga = hapus->harga;
+        histori->next = nullptr;
+        if(historidepan == nullptr) {
+            historidepan = histori;
+        } else {
+            historibelakang->next = histori;
+        }
+        historibelakang = histori;
+        cout << "Pembeli " << hapus->nama << " telah dilayani." << endl;
+        delete hapus;
+    }
+}
+
+void tampilkanAntrean() {
+    antrean *bantu = depan;
+    if(bantu == nullptr) {
+        cout << "Antrian kosong! :P" << endl;
+        return;
+    }
+
+    cout << "Isi antrean: " << endl;
+    while (bantu) {
+        cout << "   - " << bantu->nama
+             << " | " << bantu->roti
+             << " | Rp" << bantu->harga << endl;
+        bantu = bantu->next;
+    }
+    cout << endl;
+}
+
+void batalkanAntrean() {
+    if (antreanKosong()) {
+        cout << ">> Tidak ada pesanan untuk dibatalkan" << endl;
+        return;
+    }
+
+    if (depan == belakang) {
+        delete depan;
+        depan = belakang = nullptr;
+    } else {
+        antrean* bantu = depan;
+        while (bantu->next != belakang) {
+            bantu = bantu->next;
+        }
+        delete belakang;
+        belakang = bantu;
+        belakang->next = nullptr;
+    }
+    cout << "Pesanan terakhir dibatalkan" << endl;
+}
+
+void tampilkanHistori() {
+    if (!historidepan) {
+        cout << ">> Belum ada histori pesanan" << endl;
+        return;
+    }
+
+    antrean* bantu = historidepan;
+    cout << "Riwayat pesanan yang sudah dilayani:" << endl;
+    while (bantu) {
+        cout << "   - " << bantu->nama
+             << " | " << bantu->roti
+             << " | Rp" << bantu->harga << endl;
+        bantu = bantu->next;
+    }
+}
+
+int main() {
+    int pilihan;
+    char ulang;
+    do {
+        system("cls");
+        cout << "Toko Roti Manis Lezat Depok" << endl;
+        cout << "===========================" << endl;
+        cout << "1. Ambil Antrean" << endl;
+        cout << "2. Layani Pembeli" << endl;
+        cout << "3. Tampilkan Antrean" << endl;
+        cout << "4. Hapus Pesanan" << endl;
+        cout << "5. Histori Pesanan" << endl;
+        cout << "6. Keluar" << endl;
+        cout << "===========================" << endl;
+        cout << "Masukkan pilihan: ";
+        cin >> pilihan;
+
+        switch(pilihan) {
+            case 1: {
+                tambahAntrean();
+                break;
+            }
+            case 2:
+                layaniPembeli();
+                break;
+            case 3:
+                tampilkanAntrean();
+                break;
+            case 4:
+                batalkanAntrean();
+                break;
+            case 5:
+                tampilkanHistori();
+                break;
+            case 6:
+                cout << "Terima kasih telah menggunakan layanan kami!" << endl;
+                exit(0);
+                break;
+            default:
+                cout << "Pilihan tidak valid!" << endl;
+        }
+        cout << " " << endl;
+        cout << "Apakah anda ingin kembali ke menu? (y/n): "; cin >> ulang;
+    } while(ulang == 'y' || ulang == 'Y');
+    cout << "Terima kasih telah menggunakan layanan kami!" << endl;
+    return 0;
+
+}
